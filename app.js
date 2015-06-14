@@ -162,6 +162,71 @@ Bubbles.prototype.createAndDrawShape = function (baseSelector, data) {
 
 /* BUBBLES END */
 
+/* PACKED BUBBLES */
+
+var Bubbles = function(data) {
+    this.padding = data.padding;
+    this.diameter = data.diameter;
+    this.color = data.color;
+    this.format = data.format;
+    this.chartClass = data.chartClass; 
+}
+
+Bubbles.prototype.createShapeBase = function(baseSelector) {
+    var width = this.diameter;
+    var height = this.diameter;
+    var chartClass = this.chartClass;
+
+    var svg = d3.select(baseSelector).append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("class", chartClass)
+
+    return svg;
+}
+
+Bubbles.prototype.drawShape = function(base, data) {
+    var diameter = this.diameter;
+    var padding = this.padding;
+    var self = this;
+
+    var pack = d3.layout.pack()
+        .sort(null)
+        .size([diameter, diameter])
+        .value(function(d) { return d.size; })
+
+    var g = base.append("g");
+
+    var shape = g.datum(data)
+        .selectAll(".node")
+        .data(pack.nodes)
+        .enter().append("g")
+        .attr("class", function(d) { return d.children ? "node" : "leaf node"; })
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+    shape.append("title")
+        .text(function(d) { return d.name + (d.children ? "" : ": " + self.format(d.size)); });
+
+    shape.append("circle")
+        .attr("r", function(d) { return d.r; })
+        //.style("fill", function(d) { return self.color(d.packageName); });
+
+    shape.filter(function(d) { return !d.children; }).append("text")
+        .attr("dy", ".3em")
+        .style("text-anchor", "middle")
+        .text(function(d) { return d.name.substring(0, d.r / 3); });
+    
+    return shape;
+}
+
+Bubbles.prototype.createAndDrawShape = function (baseSelector, data) {
+    var shape, base;
+    base = this.createShapeBase(baseSelector);
+    shape = this.drawShape(base, data);
+}
+
+/* PACKED BUBBLES END */
+
 /* ARC */ 
 
 var Arc = function(data) {
