@@ -164,7 +164,7 @@ Bubbles.prototype.createAndDrawShape = function (baseSelector, data) {
 
 /* PACKED BUBBLES */
 
-var Bubbles = function(data) {
+var PackedBubbles = function(data) {
     this.padding = data.padding;
     this.diameter = data.diameter;
     this.color = data.color;
@@ -172,7 +172,7 @@ var Bubbles = function(data) {
     this.chartClass = data.chartClass; 
 }
 
-Bubbles.prototype.createShapeBase = function(baseSelector) {
+PackedBubbles.prototype.createShapeBase = function(baseSelector) {
     var width = this.diameter;
     var height = this.diameter;
     var chartClass = this.chartClass;
@@ -185,7 +185,7 @@ Bubbles.prototype.createShapeBase = function(baseSelector) {
     return svg;
 }
 
-Bubbles.prototype.drawShape = function(base, data) {
+PackedBubbles.prototype.drawShape = function(base, data) {
     var diameter = this.diameter;
     var padding = this.padding;
     var self = this;
@@ -219,7 +219,7 @@ Bubbles.prototype.drawShape = function(base, data) {
     return shape;
 }
 
-Bubbles.prototype.createAndDrawShape = function (baseSelector, data) {
+PackedBubbles.prototype.createAndDrawShape = function (baseSelector, data) {
     var shape, base;
     base = this.createShapeBase(baseSelector);
     shape = this.drawShape(base, data);
