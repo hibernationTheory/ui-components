@@ -84,6 +84,95 @@ Pie.prototype.createAndDrawShape = function (baseSelector, data) {
 
 /* PIE END */
 
+/* ZOOM BUBBLES */
+
+var ZoomBubbles = function(initData) {
+    this.diameter = initData.diameter || d3.min([window.innerWidth, window.innerHeight]);
+    this.margin = initData.margin || 0;
+    this.padding = initData.padding || 0;
+    this.color = initData.color || d3.scale.category10();
+    this.format = initData.format || d3.format(",d");
+    this.chartClass = initData.chartClass || "temp-class"; 
+    }
+
+ZoomBubbles.prototype.createShapeBase = function(baseSelector) {
+    var width = this.diameter;
+    var height = this.diameter;
+    var chartClass = this.chartClass;
+
+    var svg = d3.select(baseSelector).append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("class", chartClass)
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+        
+    return svg;
+}
+
+ZoomBubbles.prototype.drawShape = function(base, data) {
+    var margin = this.margin;
+    var diameter = this.diameter;
+    var self = this;
+
+    var pack = d3.layout.pack()
+        .padding(2)
+        .size([diameter - margin, diameter - margin])
+        .value(function(d) { return d.size; })
+
+    var focus = data,
+        nodes = pack.nodes(data),
+        view;
+
+    var shape = base.selectAll("circle")
+        .data(nodes)
+        .enter().append("circle")
+        .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+        .style("fill", function(d) { return d.children ? self.color(d.depth) : null; })
+        .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+
+    var text = base.selectAll("text")
+        .data(nodes)
+        .enter().append("text")
+        .attr("class", "label")
+        .style("fill-opacity", function(d) { return d.parent === data ? 1 : 0; })
+        .style("display", function(d) { return d.parent === data ? null : "none"; })
+        .text(function(d) { return d.name; });
+
+    var node = base.selectAll("circle,text");
+
+    d3.select("body")
+        .style("background", this.color(-1))
+        .on("click", function() { zoom(data); });
+
+    zoomTo([data.x, data.y, data.r * 2 + margin]);
+
+    function zoom(d) {
+      var focus0 = focus; focus = d;
+
+      var transition = d3.transition()
+          .duration(d3.event.altKey ? 7500 : 750)
+          .tween("zoom", function(d) {
+            var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
+            return function(t) { zoomTo(i(t)); };
+          });
+
+      transition.selectAll("text")
+        .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+          .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
+          .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+          .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+    }
+
+    function zoomTo(v) {
+      var k = diameter / v[2]; view = v;
+      node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+      shape.attr("r", function(d) { return d.r * k; });
+    }
+}
+
+/* ZOOM BUBBLES END */
+
 /* BUBBLES */
 
 var Bubbles = function(data) {
