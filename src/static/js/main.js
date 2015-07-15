@@ -3,67 +3,14 @@
  */
 
 import { Arc } from './modules/shape_all';
+import { ShapeHelper } from './modules/shape_helper';
 
 Number.prototype.degsToRads = function () {
     return d3.scale.linear().domain([0, 360]).range([0, 2 * Math.PI])(this);
 };
 
 
-var uiHelper = {}
-
-uiHelper._randomInRange = function (min, max) {
-    return d3.scale.linear().domain([0, 1]).range([min, max])(Math.random());
-};
-
-
-uiHelper.randomizeData = function(sourceData, randomizationData) {
-    /**
-    * randomizeData randomizes the corresponding items in sourceData,
-    * according to data from randomization data, returns a copy of the original sourceData
-    */
-
-    // create a copy of the target data to leave the original intact
-    var copyData = {};
-    for (var attr in sourceData) {
-        if (sourceData.hasOwnProperty(attr)) {
-            copyData[attr] = sourceData[attr];
-        }
-    }
-
-    var changed = false;
-    for (var rAttr in randomizationData) {
-        if (copyData.hasOwnProperty(rAttr)) {
-            var range = randomizationData[rAttr];
-            if (range instanceof Array && range.length >= 2) {
-                changed = true;
-                var randomNumber = this._randomInRange(range[0], range[1]);
-                copyData[rAttr] = randomNumber
-            }
-        }
-    }
-
-    if (!changed) { // if no change performed just return the original, no need to risk it
-        return sourceData
-    } else {
-        return copyData;
-    }
-}
-
-uiHelper.executeFunctionNTimes = function(data) {
-    /*
-    * executes fn with fnData n times, return the results in an array
-    */
-    var fn = data["fn"];
-    var fnData = data["fnData"];
-    var n = data["n"];
-
-    var results = [];
-    for (var i = 0; i < n; i++) {
-        results.push(fn.apply(this, fnData));
-    }
-    return results;
-}
-
+var shapeHelper = new ShapeHelper();
 
 
 var initData = {
@@ -83,8 +30,8 @@ var data = {
 
 var randomizerData = {"innerRadius":[10, 250], "startAngle":[0,360], "arcWidth":[1,7], "angularSize":[10,100], "speed":[-0.05, 0.05]};
 var amount = 100
-var newData = uiHelper.executeFunctionNTimes({
-    "fn":uiHelper.randomizeData, 
+var newData = shapeHelper.executeFunctionNTimes({
+    "fn":shapeHelper.randomizeData, 
     "fnData":[data, randomizerData], 
     "n":amount
 })
@@ -111,8 +58,8 @@ data = {
 
 var randomizerData = {"score":[-10, -100], "width":[0.1, 5]};
 var amount = 500
-var newData = uiHelper.executeFunctionNTimes({
-    "fn":uiHelper.randomizeData, 
+var newData = shapeHelper.executeFunctionNTimes({
+    "fn":shapeHelper.randomizeData, 
     "fnData":[data, randomizerData], 
     "n":amount
 });
@@ -125,12 +72,11 @@ pie.createAndDrawShape("#holder", newData)
 /* REACT STUFF */
 
 /*
-
 var App = React.createClass({
     // calls the randomizer and multiplier functions 'n' times and feeds the data to the given app
     getInitialState: function() {
-        var nData = uiHelper.executeFunctionNTimes({
-            "fn":uiHelper.randomizeData, 
+        var nData = shapeHelper.executeFunctionNTimes({
+            "fn":shapeHelper.randomizeData, 
             "fnData":[this.props.data, this.props.randomizeData], 
             "n":this.props.amount
         });
@@ -157,6 +103,7 @@ var Chart = React.createClass({
 
   componentDidMount: function() {
     var el = this.getDOMNode();
+    var arc = new Arc(initData);
     Arc.createAndDrawShape("#holder", this.props.data);
   },
 

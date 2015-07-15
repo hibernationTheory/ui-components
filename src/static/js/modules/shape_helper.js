@@ -2,12 +2,12 @@ export function ShapeHelper() {
     //
 }
 
-ShapeHelper._randomInRange = function (min, max) {
+ShapeHelper.prototype._randomInRange = function (min, max) {
     return d3.scale.linear().domain([0, 1]).range([min, max])(Math.random());
 };
 
 
-ShapeHelper.randomizeData = function(sourceData, randomizationData) {
+ShapeHelper.prototype.randomizeData = function(sourceData, randomizationData) {
     /**
     * randomizeData randomizes the corresponding items in sourceData,
     * according to data from randomization data, returns a copy of the original sourceData
@@ -40,7 +40,7 @@ ShapeHelper.randomizeData = function(sourceData, randomizationData) {
     }
 }
 
-ShapeHelper.executeFunctionNTimes = function(data) {
+ShapeHelper.prototype.executeFunctionNTimes = function(data) {
     /*
     * executes fn with fnData n times, return the results in an array
     */
