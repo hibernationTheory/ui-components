@@ -3,30 +3,46 @@ export function Arc(data) {
     this.width = data.width;
     this.height = data.height;
     this.center = {
-        "x":this.width / 2,
-        "y":this.height / 2     
+        'x':this.width / 2,
+        'y':this.height / 2     
     }
-    this.chartClass = data.chartClass; 
+    this.chartClass = data.chartClass;
+    this.baseSelector = data.baseSelector;
 }
 
-Arc.prototype.createShapeBase = function(baseSelector) {
+Arc.prototype.update = function(data) {
+    this.width = data.width;
+    this.height = data.height;
+    this.center = {
+        'x':this.width / 2,
+        'y':this.height / 2     
+    }
+
+    this.svg.attr({
+        'width':data.width,
+        'height':data.height
+    });
+    this.drawShape(this.svg, this.temp)
+}
+
+Arc.prototype.createShapeBase = function() {
     var width = this.width;
     var height = this.height;
     var chartClass = this.chartClass;
+    var baseSelector = this.baseSelector;
 
-    var svg = d3.select(baseSelector).append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("class", chartClass)
+    this.svg = d3.select(baseSelector).append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('class', chartClass)
 
-    return svg;
+    return this.svg;
 }
 
 Arc.prototype.drawShape = function(base, data) {
     var width = this.width;
     var height = this.height;
-    var center = this.center;  
-
+    var center = this.center;
 
     var arc = d3.svg.arc()
             .innerRadius(
@@ -47,32 +63,35 @@ Arc.prototype.drawShape = function(base, data) {
                     return x
                 });
 
-    var g = base.append("g");
-    var shape = g.selectAll("path")
+    if (base.select('g').node()) {
+        base.select('g').remove();
+    }
+    var g = base.append('g');
+    var shape = g.selectAll('path')
         .data(data)
-        .enter().append("path")
-        .style("fill", function(d, i){
+        .enter().append('path')
+        .style('fill', function(d, i){
             return d.color;
         })
-        .attr("transform", "translate(" + center.x + "," + center.y + ")")
-        .attr("d", arc);
+        .attr('transform', 'translate(' + center.x + ',' + center.y + ')')
+        .attr('d', arc);
 
     var t0 = Date.now();
 
     d3.timer(function(){
         var delta = Date.now() - t0;
-        shape.attr("transform", function(d) {
-            return "translate(" + center.x + "," + center.y + ") rotate(" + delta * d.speed + ")";
+        shape.attr('transform', function(d) {
+            return 'translate(' + center.x + ',' + center.y + ') rotate(' + delta * d.speed + ')';
         });
     });
 
     return shape;
 }
 
-Arc.prototype.createAndDrawShape = function (baseSelector, data) {
-    var shape, base;
-    base = this.createShapeBase(baseSelector);
-    shape = this.drawShape(base, data);
+Arc.prototype.createAndDrawShape = function (data) {
+    this.temp = data;
+    var base = this.createShapeBase(this.baseSelector);
+    var shape = this.drawShape(base, data);
 }
 /* ARC END */
 
@@ -83,8 +102,8 @@ export function Pie(data) {
     this.width = data.width;
     this.height = data.height;
     this.center = {
-        "x":this.width / 2,
-        "y":this.height / 2     
+        'x':this.width / 2,
+        'y':this.height / 2     
     }
     this.chartClass = data.chartClass; 
 }
@@ -94,10 +113,10 @@ Pie.prototype.createShapeBase = function(baseSelector) {
     var height = this.height;
     var chartClass = this.chartClass;
 
-    var svg = d3.select(baseSelector).append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("class", chartClass)
+    var svg = d3.select(baseSelector).append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('class', chartClass)
 
     return svg;
 }
@@ -121,15 +140,15 @@ Pie.prototype.drawShape = function(base, data) {
         return (radius - innerRadius) * (d.data.score / 100.0) + innerRadius; 
       });
 
-    var g = base.append("g");
-    var shape = g.selectAll("path")
+    var g = base.append('g');
+    var shape = g.selectAll('path')
         .data(pie(data))
-        .enter().append("path")
-        .style("fill", function(d, i){
+        .enter().append('path')
+        .style('fill', function(d, i){
             return d.data.color;
         })
-        .attr("transform", "translate(" + center.x + "," + center.y + ")")
-        .attr("d", arc);
+        .attr('transform', 'translate(' + center.x + ',' + center.y + ')')
+        .attr('d', arc);
 
     
     //var t0 = Date.now();
@@ -159,8 +178,8 @@ export function ZoomBubbles(initData) {
     this.margin = initData.margin || 0;
     this.padding = initData.padding || 0;
     this.color = initData.color || d3.scale.category10();
-    this.format = initData.format || d3.format(",d");
-    this.chartClass = initData.chartClass || "temp-class"; 
+    this.format = initData.format || d3.format(',d');
+    this.chartClass = initData.chartClass || 'temp-class'; 
     }
 
 ZoomBubbles.prototype.createShapeBase = function(baseSelector) {
@@ -168,12 +187,12 @@ ZoomBubbles.prototype.createShapeBase = function(baseSelector) {
     var height = this.diameter;
     var chartClass = this.chartClass;
 
-    var svg = d3.select(baseSelector).append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("class", chartClass)
-        .append("g")
-        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+    var svg = d3.select(baseSelector).append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('class', chartClass)
+        .append('g')
+        .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
         
     return svg;
 }
@@ -192,26 +211,26 @@ ZoomBubbles.prototype.drawShape = function(base, data) {
         nodes = pack.nodes(data),
         view;
 
-    var shape = base.selectAll("circle")
+    var shape = base.selectAll('circle')
         .data(nodes)
-        .enter().append("circle")
-        .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
-        .style("fill", function(d) { return d.children ? self.color(d.depth) : null; })
-        .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+        .enter().append('circle')
+        .attr('class', function(d) { return d.parent ? d.children ? 'node' : 'node node--leaf' : 'node node--root'; })
+        .style('fill', function(d) { return d.children ? self.color(d.depth) : null; })
+        .on('click', function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
 
-    var text = base.selectAll("text")
+    var text = base.selectAll('text')
         .data(nodes)
-        .enter().append("text")
-        .attr("class", "label")
-        .style("fill-opacity", function(d) { return d.parent === data ? 1 : 0; })
-        .style("display", function(d) { return d.parent === data ? null : "none"; })
+        .enter().append('text')
+        .attr('class', 'label')
+        .style('fill-opacity', function(d) { return d.parent === data ? 1 : 0; })
+        .style('display', function(d) { return d.parent === data ? null : 'none'; })
         .text(function(d) { return d.name; });
 
-    var node = base.selectAll("circle,text");
+    var node = base.selectAll('circle,text');
 
-    d3.select("body")
-        .style("background", this.color(-1))
-        .on("click", function() { zoom(data); });
+    d3.select('body')
+        .style('background', this.color(-1))
+        .on('click', function() { zoom(data); });
 
     zoomTo([data.x, data.y, data.r * 2 + margin]);
 
@@ -220,22 +239,22 @@ ZoomBubbles.prototype.drawShape = function(base, data) {
 
       var transition = d3.transition()
           .duration(d3.event.altKey ? 7500 : 750)
-          .tween("zoom", function(d) {
+          .tween('zoom', function(d) {
             var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
             return function(t) { zoomTo(i(t)); };
           });
 
-      transition.selectAll("text")
-        .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
-          .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-          .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
-          .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+      transition.selectAll('text')
+        .filter(function(d) { return d.parent === focus || this.style.display === 'inline'; })
+          .style('fill-opacity', function(d) { return d.parent === focus ? 1 : 0; })
+          .each('start', function(d) { if (d.parent === focus) this.style.display = 'inline'; })
+          .each('end', function(d) { if (d.parent !== focus) this.style.display = 'none'; });
     }
 
     function zoomTo(v) {
       var k = diameter / v[2]; view = v;
-      node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
-      shape.attr("r", function(d) { return d.r * k; });
+      node.attr('transform', function(d) { return 'translate(' + (d.x - v[0]) * k + ',' + (d.y - v[1]) * k + ')'; });
+      shape.attr('r', function(d) { return d.r * k; });
     }
 }
 
@@ -268,10 +287,10 @@ Bubbles.prototype.createShapeBase = function(baseSelector) {
     var height = this.diameter;
     var chartClass = this.chartClass;
 
-    var svg = d3.select(baseSelector).append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("class", chartClass)
+    var svg = d3.select(baseSelector).append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('class', chartClass)
 
     return svg;
 }
@@ -286,26 +305,26 @@ Bubbles.prototype.drawShape = function(base, data) {
         .size([diameter, diameter])
         .padding(padding);
 
-    var g = base.append("g");
+    var g = base.append('g');
 
-    var shape = g.selectAll(".node")
+    var shape = g.selectAll('.node')
         .data(bubble.nodes(this.flattenData(data))
         .filter(function(d) { return !d.children; }))
-        .enter().append("g")
-        .attr("class", "node")
-        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+        .enter().append('g')
+        .attr('class', 'node')
+        .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
 
     
-    shape.append("title")
-        .text(function(d) { return d.className + ": " + self.format(d.value); });
+    shape.append('title')
+        .text(function(d) { return d.className + ': ' + self.format(d.value); });
 
-    shape.append("circle")
-        .attr("r", function(d) { return d.r; })
-        .style("fill", function(d) { return self.color(d.packageName); });
+    shape.append('circle')
+        .attr('r', function(d) { return d.r; })
+        .style('fill', function(d) { return self.color(d.packageName); });
 
-    shape.append("text")
-        .attr("dy", ".3em")
-        .style("text-anchor", "middle")
+    shape.append('text')
+        .attr('dy', '.3em')
+        .style('text-anchor', 'middle')
         .text(function(d) { return d.className.substring(0, d.r / 3); });
 
     return shape;
@@ -334,10 +353,10 @@ PackedBubbles.prototype.createShapeBase = function(baseSelector) {
     var height = this.diameter;
     var chartClass = this.chartClass;
 
-    var svg = d3.select(baseSelector).append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("class", chartClass)
+    var svg = d3.select(baseSelector).append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('class', chartClass)
 
     return svg;
 }
@@ -352,25 +371,25 @@ PackedBubbles.prototype.drawShape = function(base, data) {
         .size([diameter, diameter])
         .value(function(d) { return d.size; })
 
-    var g = base.append("g");
+    var g = base.append('g');
 
     var shape = g.datum(data)
-        .selectAll(".node")
+        .selectAll('.node')
         .data(pack.nodes)
-        .enter().append("g")
-        .attr("class", function(d) { return d.children ? "node" : "leaf node"; })
-        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+        .enter().append('g')
+        .attr('class', function(d) { return d.children ? 'node' : 'leaf node'; })
+        .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
 
-    shape.append("title")
-        .text(function(d) { return d.name + (d.children ? "" : ": " + self.format(d.size)); });
+    shape.append('title')
+        .text(function(d) { return d.name + (d.children ? '' : ': ' + self.format(d.size)); });
 
-    shape.append("circle")
-        .attr("r", function(d) { return d.r; })
-        //.style("fill", function(d) { return self.color(d.packageName); });
+    shape.append('circle')
+        .attr('r', function(d) { return d.r; })
+        //.style('fill', function(d) { return self.color(d.packageName); });
 
-    shape.filter(function(d) { return !d.children; }).append("text")
-        .attr("dy", ".3em")
-        .style("text-anchor", "middle")
+    shape.filter(function(d) { return !d.children; }).append('text')
+        .attr('dy', '.3em')
+        .style('text-anchor', 'middle')
         .text(function(d) { return d.name.substring(0, d.r / 3); });
     
     return shape;

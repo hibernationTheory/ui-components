@@ -13,31 +13,10 @@ Number.prototype.degsToRads = function () {
 var shapeHelper = new ShapeHelper();
 
 
-var initData = {
-    "width":1000, 
-    "height":1000, 
-    "chartClass":"test-chart",  
-};
 
-var data = {
-    "color":"lightgrey", 
-    "innerRadius":500, 
-    "arcWidth":2, 
-    "startAngle":30, 
-    "angularSize":45,
-    "speed":0.1
-};
 
-var randomizerData = {"innerRadius":[10, 250], "startAngle":[0,360], "arcWidth":[1,7], "angularSize":[10,100], "speed":[-0.05, 0.05]};
-var amount = 100
-var newData = shapeHelper.executeFunctionNTimes({
-    "fn":shapeHelper.randomizeData, 
-    "fnData":[data, randomizerData], 
-    "n":amount
-})
-
-var arc = new Arc(initData);
-arc = arc.createAndDrawShape("#holder", newData)
+//var arc = new Arc(initData);
+//arc = arc.createAndDrawShape("#holder", newData)
 
 
 /*
@@ -71,25 +50,63 @@ pie.createAndDrawShape("#holder", newData)
 
 /* REACT STUFF */
 
-/*
+var initData = {
+    "width":1000, 
+    "height":1000, 
+    "chartClass":"test-chart",  
+};
+
+var data = {
+    "color":"lightgrey", 
+    "innerRadius":500, 
+    "arcWidth":2, 
+    "startAngle":30, 
+    "angularSize":45,
+    "speed":0.1
+};
+var amount = 100;
+
+var randomizerData = {"innerRadius":[10, 250], "startAngle":[0,360], "arcWidth":[1,7], "angularSize":[10,100], "speed":[-0.05, 0.05]};
+
 var App = React.createClass({
     // calls the randomizer and multiplier functions 'n' times and feeds the data to the given app
     getInitialState: function() {
-        var nData = shapeHelper.executeFunctionNTimes({
-            "fn":shapeHelper.randomizeData, 
-            "fnData":[this.props.data, this.props.randomizeData], 
-            "n":this.props.amount
-        });
-        return {
-            data:nData
-        }
+      var shapeHelper = new ShapeHelper();
+      var nData = shapeHelper.executeFunctionNTimes({
+          "fn":shapeHelper.randomizeData, 
+          "fnData":[this.props.data, this.props.randomizeData], 
+          "n":this.props.amount
+      });
+      var initData = {
+          "width":window.innerWidth, 
+          "height":window.innerHeight, 
+          "chartClass":"test-chart",
+          "baseSelector":"#holder"
+      };
+
+      return {
+          data:nData,
+          initData:initData
+      }
+    },
+    componentWillMount: function() {
+      console.log('component will mount!!');
+      this.windowSize();
+    },
+    windowSize: function() {
+      var that = this;
+      d3.select(window).on('resize' ,function() {
+        var newData = {"width":window.innerWidth, "height":window.innerHeight, "chartClass":"test-chart", "baseSelector":"#holder"};
+        that.setState({'initData':newData});
+        this.render();
+      }.bind(this));
     },
     render: function() {
-        return (
-            <div className="App">
-                <Chart data={this.state.data} />
-            </div>
-        )
+      return (
+          <div className="App">
+              <Chart initData={this.state.initData} data={this.state.data} />
+          </div>
+      )
     }
 });
 
@@ -101,10 +118,22 @@ var Chart = React.createClass({
     //domain: React.PropTypes.object
   },
 
+  shouldComponentUpdate: function(nextProps, nextState) {
+    return nextProps.initData !== this.props.initData;
+  },
+
   componentDidMount: function() {
+    console.log('yay mounted!')
     var el = this.getDOMNode();
-    var arc = new Arc(initData);
-    Arc.createAndDrawShape("#holder", this.props.data);
+
+    this._arc = new Arc(this.props.initData);
+    this._arc.createAndDrawShape(this.props.data);
+  },
+
+  componentDidUpdate: function() {
+    var el = this.getDOMNode();
+    this._arc.update(this.props.initData);
+    this.render();
   },
 
   getChartState: function() {
@@ -115,13 +144,12 @@ var Chart = React.createClass({
   },
 
   render: function() {
+    console.log('sub render!!!');
     return (
-      <div className="Chart" data={this.props.data}></div>
+      <div className="Chart" initData={this.props.initData} data={this.props.data} ></div>
     );
   }
 });
-
-*/
 
 /* full version for reference purposes */
 
@@ -165,6 +193,6 @@ var Chart = React.createClass({
 
 /* */
 
-//React.render(<App randomizeData={randomizerData} data={data} amount={amount}/>, document.getElementById("holder"));
+React.render(<App randomizeData={randomizerData} data={data} amount={amount}/>, document.getElementById("holder"));
 
 /* REACT STUFF END */
