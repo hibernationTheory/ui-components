@@ -50,24 +50,6 @@ pie.createAndDrawShape("#holder", newData)
 
 /* REACT STUFF */
 
-var initData = {
-    "width":1000, 
-    "height":1000, 
-    "chartClass":"test-chart",  
-};
-
-var data = {
-    "color":"lightgrey", 
-    "innerRadius":500, 
-    "arcWidth":2, 
-    "startAngle":30, 
-    "angularSize":45,
-    "speed":0.1
-};
-var amount = 100;
-
-var randomizerData = {"innerRadius":[10, 250], "startAngle":[0,360], "arcWidth":[1,7], "angularSize":[10,100], "speed":[-0.05, 0.05]};
-
 var App = React.createClass({
     // calls the randomizer and multiplier functions 'n' times and feeds the data to the given app
     getInitialState: function() {
@@ -192,6 +174,30 @@ var Chart = React.createClass({
 */
 
 /* */
+
+var initData = {
+    "width":1000, 
+    "height":1000, 
+    "chartClass":"test-chart",  
+};
+
+var data = {
+    "color":"lightgrey", 
+    "innerRadius":500, 
+    "arcWidth":2, 
+    "startAngle":30, 
+    "angularSize":45,
+    "speed":0.1
+};
+var amount = 5000;
+
+var randomizerData = {
+  "innerRadius":[10, 250], 
+  "startAngle":[0,360], 
+  "arcWidth":[1,7], 
+  "angularSize":[10,100],
+  "speed":[-0.05, 0.05]
+ };
 
 React.render(<App randomizeData={randomizerData} data={data} amount={amount}/>, document.getElementById("holder"));
 
