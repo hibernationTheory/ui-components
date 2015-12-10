@@ -71,8 +71,8 @@ var App = React.createClass({
           initData:initData
       }
     },
-    componentWillMount: function() {
-      console.log('component will mount!!');
+    componentDidMount: function() {
+      console.log('App component did mount!!');
       this.windowSize();
     },
     windowSize: function() {
@@ -105,7 +105,7 @@ var Chart = React.createClass({
   },
 
   componentDidMount: function() {
-    console.log('yay mounted!')
+    console.log('Chart did mount!')
     var el = this.getDOMNode();
 
     this._arc = new Arc(this.props.initData);
@@ -189,11 +189,11 @@ var data = {
     "angularSize":45,
     "speed":0.1
 };
-var amount = 5000;
+var amount = 300;
 
 var randomizerData = {
-  "innerRadius":[10, 250], 
-  "startAngle":[0,360], 
+  "innerRadius":[10, 180], 
+  "startAngle":[0,180], 
   "arcWidth":[1,7], 
   "angularSize":[10,100],
   "speed":[-0.05, 0.05]
