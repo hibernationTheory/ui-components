@@ -1,3 +1,6 @@
+/* browserify allows for a module workflow also uses babel to transform content 
+which makes it possible to write Ecmascript 6 code */ 
+
 module.exports = function(grunt) {
 grunt.config('browserify', {
 	options: {
@@ -14,7 +17,7 @@ grunt.config('browserify', {
 	},
 });
 
-grunt.loadNpmTasks('grunt-browserify');
+grunt.loadNpmTasks('grunt-browserify');  // enter the full plugin name here (as it is in package.json)
 
 };
     

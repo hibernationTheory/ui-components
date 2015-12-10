@@ -1,3 +1,5 @@
+/* as the name suggests */
+
 module.exports = function(grunt) {
 grunt.config('uglify', {
 		my_target: {
@@ -7,5 +9,5 @@ grunt.config('uglify', {
 		}
 	});
 
-	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-uglify');  // enter the full plugin name here (as it is in package.json)
 };

@@ -1,3 +1,5 @@
+/* copies files in a given dir to a target dir */
+
 module.exports = function(grunt) {
 grunt.config('copy', {
 	main: {
@@ -8,7 +10,7 @@ grunt.config('copy', {
 	},
 });
 
-grunt.loadNpmTasks('grunt-contrib-copy');
+grunt.loadNpmTasks('grunt-contrib-copy');  // enter the full plugin name here (as it is in package.json)
 
 };
 
